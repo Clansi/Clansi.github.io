@@ -4,19 +4,6 @@
   
   
   <entry>
-    <title>test</title>
-    <link href="/2023/11/08/test/"/>
-    <url>/2023/11/08/test/</url>
-    
-    <content type="html"><![CDATA[<p>TEST:</p><h2 id="几个函数"><a href="#几个函数" class="headerlink" title="几个函数:"></a>几个函数:</h2><p><code>walk</code> 为虚拟地址找到PTE<br><code>mappages</code>为新映射装载PTE</p><p>名称以<code>kvm</code>开头的函数操作内核页表；以<code>uvm</code>开头的函数操作用户页表；其他函数用于二者。<code>copyout</code>和<code>copyin</code>复制数据到用户虚拟地址或从用户虚拟地址复制数据，这些虚拟地址作为系统调用参数提供.</p><p>在内核启动阶段，<strong>main</strong>（kernel&#x2F;main.c）将调用<strong>kvminit</strong>创建内核页表。整个工作流程如下，</p><ul><li>首先分配新的一页物理帧用于装载内核的根页表</li><li>然后调用kvmmap，在即将装载的内核页表上&#x3D;&#x3D;建立一系列的<strong>直接映射</strong>&#x3D;&#x3D;，包括I&#x2F;O设备、内核代码和数据、内核空闲内存段等</li><li>最后再把trampoline映射到内核虚拟地址的最顶端，完成了内核页表的初始化。</li></ul><p><strong>kvmmap</strong>做的工作很简单，直接转交给mappages，让它建立内核页表中的相关映射项。</p><p>来看<strong>mappages</strong>:<br>输入是一个页表、要建立映射关系的va和pa、映射的范围大小、以及PTE的权限。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span><br><span class="hljs-title function_">mappages</span><span class="hljs-params">(<span class="hljs-type">pagetable_t</span> pagetable, uint64 va, uint64 size, uint64 pa, <span class="hljs-type">int</span> perm)</span><br></code></pre></td></tr></table></figure><p>mappages<strong>以页为单位</strong>处理这些输入，调用walk为va查找最后一级页表的PTE，如果该PTE没有被占用（输入新的映射时，walk会返回有效位为0的PTE，代表没有人在使用这项映射），就用输入的pa和PTE权限，更新该PTE项并设置其有效，从而在页表中建立起新映射，反复进行直到输入的所有映射关系都被建立完成。</p>]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>Hello World</title>
     <link href="/2023/11/08/hello-world/"/>
     <url>/2023/11/08/hello-world/</url>
