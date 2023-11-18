@@ -16,21 +16,21 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+    <meta name="description" content="先放通过截图(23sp)：![[Pasted image 20231118184514.png]]15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://clansi.github.io/2023/11/08/hello-world/index.html">
+<meta property="og:title" content="Clansy&#39;s Blog">
+<meta property="og:url" content="https://clansi.github.io/2023/11/18/Proj0.C++%20Primer/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="先放通过截图(23sp)：![[Pasted image 20231118184514.png]]15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-08T08:01:33.188Z">
-<meta property="article:modified_time" content="2023-11-08T08:01:33.188Z">
+<meta property="article:published_time" content="2023-11-18T15:23:33.459Z">
+<meta property="article:modified_time" content="2023-11-18T15:23:33.460Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Hello World - Clansy&#39;s Blog</title>
+  <title>Clansy&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +196,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Hello World"></span>
+            <span id="subtitle" data-typed-text=""></span>
           
         </div>
 
@@ -212,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-08 16:01" pubdate>
-          2023年11月8日 下午
+        <time datetime="2023-11-18 23:23" pubdate>
+          2023年11月18日 晚上
         </time>
       </span>
     
@@ -224,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          367 字
+          2.9k 字
         
       </span>
     
@@ -235,7 +235,7 @@
         
         
         
-          4 分钟
+          25 分钟
         
       </span>
     
@@ -272,24 +272,55 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Hello World</h1>
+            <h1 id="seo-header"></h1>
             
             
               <div class="markdown-body">
                 
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
+                <p>先放通过截图(23sp)：<br>![[Pasted image 20231118184514.png]]<br>15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(<br><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/spring2023/project0/">Proj链接</a></p>
+<h2 id="Task1-Copy-On-Write-Trie"><a href="#Task1-Copy-On-Write-Trie" class="headerlink" title="Task1 Copy-On-Write Trie"></a>Task1 Copy-On-Write Trie</h2><p>修改<code>trie.h</code>和<code>trie.cpp</code>文件来实现一个COW的Trie，关键点就是我们不在原本的Trie上操作，而是重用不变的旧节点，创建修改后的新的节点，而后返回新的根。</p>
+<p>task1中要实现三个方法：</p>
+<h3 id="Get-key"><a href="#Get-key" class="headerlink" title="Get(key)"></a>Get(key)</h3><p>意义明确，返回与键对应的值，思路也很显然：遍历整个Trie，找到key对应的TrieNode。主要还是一些语法上的问题、编译上的错误。有个注意点是，启动代码注释中提到的强制类型转换:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// After you find the node, you should use `dynamic_cast` to cast it to `const TrieNodeWithValue&lt;T&gt; *`.</span><br></code></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
+<h3 id="Put-key"><a href="#Put-key" class="headerlink" title="Put(key)"></a>Put(key)</h3><p>在键上写入值或覆盖值。难于Get方法的点在于，需要对<strong>节点</strong>进行操作。自然地，我们一定会创建一个带着新值的该键的节点，然后将该节点加入到其父节点的children map中，这是一个<strong>自底向上</strong>的过程，因此在遍历到键的过程中，我们想到将之前相同的节点存入一个栈中。而后完成一层层的操作。<br>因此该过程大致为：</p>
+<ol>
+<li>遍历到键，且把相同的节点压入到栈中。</li>
+<li>创建要put的节点</li>
+<li>自底向上复制节点</li>
+<li>返回新的Trie</li>
+</ol>
+<p>有个注意点同样在注释中:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// Note that `T` might be a non-copyable type. Always use `std::move` when creating `shared_ptr` on that value.</span><br></code></pre></td></tr></table></figure>
+<h3 id="Remove-key"><a href="#Remove-key" class="headerlink" title="Remove(key)"></a>Remove(key)</h3><p>删除键的值，由于要操作节点，因此总体流程与<code>Put</code>方法类似，需要注意的点是我们需要<strong>删除</strong>那些<br>没有<code>children_</code>并且不为<strong>值节点</strong>的节点，(RemoveFreeTest测试考察了这一点)</p>
+<p>至此Task1结束，主要是熟悉trie.h的各种定义。</p>
+<p>测试实现：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make trie_test trie_store_test -j$(nproc)<br>make trie_noncopy_test trie_store_noncopy_test -j$(nproc)<br>./test/trie_test<br>./test/trie_noncopy_test<br></code></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h2 id="Task2-并发存储"><a href="#Task2-并发存储" class="headerlink" title="Task2 并发存储"></a>Task2 并发存储</h2><p>修改<code>trie_store.cpp</code>实现对Trie的并发操作，学过OS的应该都不陌生，当对Trie并发地进行操作时，就需要加上锁了，此Task就是实现这个。没什么可讲的，可以直接调用Task1实现的函数，操作时加上对应的锁就行。</p>
+<p>测试实现:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make trie_test trie_store_test -j$(nproc)<br>make trie_noncopy_test trie_store_noncopy_test -j$(nproc)<br>./test/trie_store_test<br>./test/trie_store_noncopy_test<br></code></pre></td></tr></table></figure>
+<h2 id="Task3-调试"><a href="#Task3-调试" class="headerlink" title="Task3 调试"></a>Task3 调试</h2><p>需要在<code>trie_answer.h</code>中填入有关<code>trie_debug_test.cpp</code>中trie结构的信息，随机数生成不一样，可以将trie结构初始化改成：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> trie = <span class="hljs-built_in">Trie</span>();<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;65&quot;</span>, <span class="hljs-number">25</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;61&quot;</span>, <span class="hljs-number">65</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;82&quot;</span>, <span class="hljs-number">84</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;2&quot;</span>, <span class="hljs-number">42</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;16&quot;</span>, <span class="hljs-number">67</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;94&quot;</span>, <span class="hljs-number">53</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;20&quot;</span>, <span class="hljs-number">35</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;3&quot;</span>, <span class="hljs-number">57</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;93&quot;</span>, <span class="hljs-number">30</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;75&quot;</span>, <span class="hljs-number">29</span>);<br></code></pre></td></tr></table></figure>
+<p>然后根据要求，输出看结果，填入答案即可。(感觉是很无趣的一环)</p>
+<h2 id="Task4-SQL-String-Functions"><a href="#Task4-SQL-String-Functions" class="headerlink" title="Task4 SQL String Functions"></a>Task4 SQL String Functions</h2><p>在<code>string_expression.h</code>中加入大小写转换的功能。在<code>plan_func_call.cpp</code>中实现对刚才写的功能的调用(跟着注释来写就好)</p>
+<p>测试实现:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make -j`nproc` shell<br>./bin/bustub-shell<br><span class="hljs-meta prompt_">bustub&gt; </span><span class="language-bash"><span class="hljs-keyword">select</span> upper(<span class="hljs-string">&#x27;AbCd&#x27;</span>), lower(<span class="hljs-string">&#x27;AbCd&#x27;</span>);</span><br></code></pre></td></tr></table></figure>
+<p>结果出现<code>ABCD abcd</code>即正确。</p>
+<h2 id="提交代码"><a href="#提交代码" class="headerlink" title="提交代码"></a>提交代码</h2><h3 id="Format"><a href="#Format" class="headerlink" title="Format"></a>Format</h3><p>公开课的特色之一：Style Check，<br>官方给出的三行命令检查：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">make format</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">make check-lint</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">make check-clang-tidy-p0</span><br></code></pre></td></tr></table></figure>
+<p>在此ag中，不满足上述三种规则的代码会直接评0分。<br>由于本人在terminal下只能执行第二条命令，第一条和第三条都报错，转而使用了vscode的自动格式化：<br>在Macos的环境下大致配置如下：</p>
+<ol>
+<li>在vscode拓展中安装<code>Clang-Format</code></li>
+<li>阅读readme,在.vscode文件夹下的<code>settings.json</code>中配置如下两行:<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;editor.formatOnSave&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-comment">// 保存时自动格式化</span><br><span class="hljs-attr">&quot;clang-format.executable&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/absolute/path/to/clang-format&quot;</span> <span class="hljs-comment">// 路径(等下要改)</span><br></code></pre></td></tr></table></figure></li>
+<li>若安装过brew,在terminal中安装format:<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">brew install clang-format<br></code></pre></td></tr></table></figure></li>
+<li>获取format路径，在terminal中输入<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">which clang-format<br></code></pre></td></tr></table></figure></li>
+<li>将输出结果复制覆盖上述json文件的路径。</li>
+<li>在vscode中打开要格式化的代码文件，cmd+s保存即可自动格式化。<br>此时应该满足官方的前两条规则，第三条是有关代码本身，包括变量命名的规范，循环条件的冗余等等。(若安装了<code>clangd</code>拓展，在ide中会如编译错误一样标红显示，注意进行修改)</li>
+</ol>
+<p>当一切完成，打包文件，在命令行中输入:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make submit-p0<br></code></pre></td></tr></table></figure>
+<p>会在根目录下自动生成<em>proj0-submission.zip</em>压缩包，上传ag(无法直接导入github库)，虔诚地等待打分……</p>
 
                 
               </div>
@@ -307,8 +338,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Hello World</div>
-      <div>https://clansi.github.io/2023/11/08/hello-world/</div>
+      <div></div>
+      <div>https://clansi.github.io/2023/11/18/Proj0.C++ Primer/</div>
     </div>
     <div class="license-meta">
       
@@ -320,7 +351,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月8日</div>
+          <div>2023年11月18日</div>
         </div>
       
       
@@ -352,15 +383,15 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/18/Proj0.C++%20Primer/" title="">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile"></span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2023/11/08/hello-world/" title="Hello World">
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
