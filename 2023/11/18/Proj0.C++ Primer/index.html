@@ -16,21 +16,23 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="先放通过截图(23sp)：![[Pasted image 20231118184514.png]]15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie">
+    <meta name="description" content="先放通过截图(23sp)：15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie.cpp文件来实现一个COW的Trie，关键点就是我们不在原本的Trie">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Clansy&#39;s Blog">
+<meta property="og:title" content="Proj0.C++ Primer">
 <meta property="og:url" content="https://clansi.github.io/2023/11/18/Proj0.C++%20Primer/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="先放通过截图(23sp)：![[Pasted image 20231118184514.png]]15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie">
+<meta property="og:description" content="先放通过截图(23sp)：15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie.cpp文件来实现一个COW的Trie，关键点就是我们不在原本的Trie">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://clansi.github.io/images/0.jpg">
 <meta property="article:published_time" content="2023-11-18T15:23:33.459Z">
-<meta property="article:modified_time" content="2023-11-18T15:23:33.460Z">
+<meta property="article:modified_time" content="2023-11-19T02:51:20.676Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://clansi.github.io/images/0.jpg">
   
   
   
-  <title>Clansy&#39;s Blog</title>
+  <title>Proj0.C++ Primer - Clansy&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text=""></span>
+            <span id="subtitle" data-typed-text="Proj0.C++ Primer"></span>
           
         </div>
 
@@ -272,12 +274,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header"></h1>
+            <h1 id="seo-header">Proj0.C++ Primer</h1>
             
             
               <div class="markdown-body">
                 
-                <p>先放通过截图(23sp)：<br>![[Pasted image 20231118184514.png]]<br>15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(<br><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/spring2023/project0/">Proj链接</a></p>
+                <p>先放通过截图(23sp)：<br><img src="/../images/0.jpg" srcset="/img/loading.gif" lazyload><br>15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(<br><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/spring2023/project0/">Proj链接</a></p>
 <h2 id="Task1-Copy-On-Write-Trie"><a href="#Task1-Copy-On-Write-Trie" class="headerlink" title="Task1 Copy-On-Write Trie"></a>Task1 Copy-On-Write Trie</h2><p>修改<code>trie.h</code>和<code>trie.cpp</code>文件来实现一个COW的Trie，关键点就是我们不在原本的Trie上操作，而是重用不变的旧节点，创建修改后的新的节点，而后返回新的根。</p>
 <p>task1中要实现三个方法：</p>
 <h3 id="Get-key"><a href="#Get-key" class="headerlink" title="Get(key)"></a>Get(key)</h3><p>意义明确，返回与键对应的值，思路也很显然：遍历整个Trie，找到key对应的TrieNode。主要还是一些语法上的问题、编译上的错误。有个注意点是，启动代码注释中提到的强制类型转换:</p>
@@ -338,7 +340,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div></div>
+      <div>Proj0.C++ Primer</div>
       <div>https://clansi.github.io/2023/11/18/Proj0.C++ Primer/</div>
     </div>
     <div class="license-meta">
