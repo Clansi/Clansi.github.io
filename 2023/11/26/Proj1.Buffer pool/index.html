@@ -16,23 +16,23 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="先放通过截图(23sp)：15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie.cpp文件来实现一个COW的Trie，关键点就是我们不在原本的Trie">
+    <meta name="description" content="先放通过截图(23fa)：记录笔者作业CMU15-445(23fa)的proj1中的实现和踩过的坑，第一个坑:由于笔者在proj0的时候一直跟着2023sp的在写，在写pro1中发现代码中要我使用disk_scheduler来调度磁盘的读写，而2023sp里面的文档并未提及这一点，后来发现由于其bustub早已更新了2023fa的库，而我当时clone的也就是这个库(傻傻地对着23sp的文档写23">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CMU15-445 Proj0.C++ Primer">
-<meta property="og:url" content="https://clansi.github.io/2023/11/18/Proj0.C++%20Primer/index.html">
+<meta property="og:title" content="CMU15-445 Proj1.BUFFER POOL">
+<meta property="og:url" content="https://clansi.github.io/2023/11/26/Proj1.Buffer%20pool/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="先放通过截图(23sp)：15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(Proj链接 Task1 Copy-On-Write Trie修改trie.h和trie.cpp文件来实现一个COW的Trie，关键点就是我们不在原本的Trie">
+<meta property="og:description" content="先放通过截图(23fa)：记录笔者作业CMU15-445(23fa)的proj1中的实现和踩过的坑，第一个坑:由于笔者在proj0的时候一直跟着2023sp的在写，在写pro1中发现代码中要我使用disk_scheduler来调度磁盘的读写，而2023sp里面的文档并未提及这一点，后来发现由于其bustub早已更新了2023fa的库，而我当时clone的也就是这个库(傻傻地对着23sp的文档写23">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://clansi.github.io/images/0.jpg">
-<meta property="article:published_time" content="2023-11-18T15:23:33.459Z">
-<meta property="article:modified_time" content="2023-11-19T03:11:48.290Z">
+<meta property="og:image" content="https://clansi.github.io/images/1.png">
+<meta property="article:published_time" content="2023-11-26T12:11:05.166Z">
+<meta property="article:modified_time" content="2023-11-26T12:15:55.682Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://clansi.github.io/images/0.jpg">
+<meta name="twitter:image" content="https://clansi.github.io/images/1.png">
   
   
   
-  <title>CMU15-445 Proj0.C++ Primer - Clansy&#39;s Blog</title>
+  <title>CMU15-445 Proj1.BUFFER POOL - Clansy&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -198,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="CMU15-445 Proj0.C++ Primer"></span>
+            <span id="subtitle" data-typed-text="CMU15-445 Proj1.BUFFER POOL"></span>
           
         </div>
 
@@ -214,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-18 23:23" pubdate>
-          2023年11月18日 晚上
+        <time datetime="2023-11-26 20:11" pubdate>
+          2023年11月26日 晚上
         </time>
       </span>
     
@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.9k 字
+          3.9k 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          25 分钟
+          33 分钟
         
       </span>
     
@@ -274,55 +274,60 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">CMU15-445 Proj0.C++ Primer</h1>
+            <h1 id="seo-header">CMU15-445 Proj1.BUFFER POOL</h1>
             
             
               <div class="markdown-body">
                 
-                <p>先放通过截图(23sp)：<br><img src="/../images/0.jpg" srcset="/img/loading.gif" lazyload><br>15-445的入课cpp测试(CMU的学生通不过的话会被退课😨)，由于本人没有cpp基础，在各种语法上还是挣扎了很久，包括模版、智能指针等，若读者要刷这门课，还是要先学一下这些知识，否则就是痛苦地跟编译作斗争:(<br><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/spring2023/project0/">Proj链接</a></p>
-<h2 id="Task1-Copy-On-Write-Trie"><a href="#Task1-Copy-On-Write-Trie" class="headerlink" title="Task1 Copy-On-Write Trie"></a>Task1 Copy-On-Write Trie</h2><p>修改<code>trie.h</code>和<code>trie.cpp</code>文件来实现一个COW的Trie，关键点就是我们不在原本的Trie上操作，而是重用不变的旧节点，创建修改后的新的节点，而后返回新的根。</p>
-<p>task1中要实现三个方法：</p>
-<h3 id="Get-key"><a href="#Get-key" class="headerlink" title="Get(key)"></a>Get(key)</h3><p>意义明确，返回与键对应的值，思路也很显然：遍历整个Trie，找到key对应的TrieNode。主要还是一些语法上的问题、编译上的错误。有个注意点是，启动代码注释中提到的强制类型转换:</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// After you find the node, you should use `dynamic_cast` to cast it to `const TrieNodeWithValue&lt;T&gt; *`.</span><br></code></pre></td></tr></table></figure>
-
-<h3 id="Put-key"><a href="#Put-key" class="headerlink" title="Put(key)"></a>Put(key)</h3><p>在键上写入值或覆盖值。难于Get方法的点在于，需要对<strong>节点</strong>进行操作。自然地，我们一定会创建一个带着新值的该键的节点，然后将该节点加入到其父节点的children map中，这是一个<strong>自底向上</strong>的过程，因此在遍历到键的过程中，我们想到将之前相同的节点存入一个栈中。而后完成一层层的操作。<br>因此该过程大致为：</p>
+                <p>先放通过截图(23fa)：<br><img src="/../images/1.png" srcset="/img/loading.gif" lazyload><br>记录笔者作业CMU15-445(23fa)的proj1中的实现和踩过的坑，第一个坑:由于笔者在proj0的时候一直跟着2023sp的在写，在写pro1中发现代码中要我使用disk_scheduler来调度磁盘的读写，而2023sp里面的文档并未提及这一点，后来发现由于其bustub早已更新了2023fa的库，而我当时clone的也就是这个库(傻傻地对着23sp的文档写23fa的proj…)。于是就跑去跟2023fa了，好在Andy老师对于2023fa也开放了lec和ag，(跪了)，不过ag现在(2023.11.26)只开放到proj2，期待后面的更新。</p>
+<h2 id="Task1-LRU-K-Replacement-Policy"><a href="#Task1-LRU-K-Replacement-Policy" class="headerlink" title="Task1 - LRU-K Replacement Policy"></a>Task1 - LRU-K Replacement Policy</h2><p>当缓冲区满时，我们需要考虑移出某一帧，为新帧留出位置，这里用到的方法是的<code>LRU-K</code>，是LRU(Least Recently Used)的衍生，在LRU-K中，评判规则是<code>backward k-distance</code>，代表该帧在当前时间戳和前k次时间戳的差，显然这个时间差越长，代表此帧的使用频率越小，我们驱逐的就是<code>k-distance</code><strong>最大</strong>的帧，这就是这个task要实现的：<br>在<code>lru_k_replacer.h</code>实现<code>LRUKReplacer</code>类，在<code>lru_k_replacer.cpp</code>实现相应方法:(注意加锁确保线程安全)</p>
+<h3 id="Evict-frame-id-t-frame-id"><a href="#Evict-frame-id-t-frame-id" class="headerlink" title="Evict(frame_id_t* frame_id):"></a>Evict(frame_id_t* frame_id):</h3><p>驱逐与 <code>Replacer</code> 正在跟踪的所有其他可驱逐帧相比具有最大后向 k 距离的帧(若不足K次访问，则记k-distance为+inf。在输出参数中存储帧 ID 并返回 True。如果没有可驱逐的帧，则返回 False。<br>这里分为三种情况：</p>
 <ol>
-<li>遍历到键，且把相同的节点压入到栈中。</li>
-<li>创建要put的节点</li>
-<li>自底向上复制节点</li>
-<li>返回新的Trie</li>
+<li>无<code>k-distance</code>为inf的帧：则对所有可驱逐的帧进行<strong>LRU-K</strong>算法驱逐</li>
+<li>有一帧的<code>k-distance</code>为inf:对其驱逐</li>
+<li>多帧的k-distance为inf，&#x3D;&#x3D;这里需要注意&#x3D;&#x3D; 官方文档及注释都写的有些晦涩，简单来说就是驱逐这些帧中最早出现的。如考虑这个replacer_: k &#x3D; 3, 记录序列从旧到新为:<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">1 </span><span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">4</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span> <br></code></pre></td></tr></table></figure>
+这里1和2都有<strong>3次</strong>的访问记录，而3和4少于3次，因此属于上述的第三种情况，这里按照LRU的策略，我们应该驱逐最近最旧的访问，也就是4。但是在LRU-K的访问中，我们就简单地驱逐最早出现的帧，这里也就是3.</li>
 </ol>
-<p>有个注意点同样在注释中:</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// Note that `T` might be a non-copyable type. Always use `std::move` when creating `shared_ptr` on that value.</span><br></code></pre></td></tr></table></figure>
-<h3 id="Remove-key"><a href="#Remove-key" class="headerlink" title="Remove(key)"></a>Remove(key)</h3><p>删除键的值，由于要操作节点，因此总体流程与<code>Put</code>方法类似，需要注意的点是我们需要<strong>删除</strong>那些<br>没有<code>children_</code>并且不为<strong>值节点</strong>的节点，(RemoveFreeTest测试考察了这一点)</p>
-<p>至此Task1结束，主要是熟悉trie.h的各种定义。</p>
-<p>测试实现：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make trie_test trie_store_test -j$(nproc)<br>make trie_noncopy_test trie_store_noncopy_test -j$(nproc)<br>./test/trie_test<br>./test/trie_noncopy_test<br></code></pre></td></tr></table></figure>
-
-<h2 id="Task2-并发存储"><a href="#Task2-并发存储" class="headerlink" title="Task2 并发存储"></a>Task2 并发存储</h2><p>修改<code>trie_store.cpp</code>实现对Trie的并发操作，学过OS的应该都不陌生，当对Trie并发地进行操作时，就需要加上锁了，此Task就是实现这个。没什么可讲的，可以直接调用Task1实现的函数，操作时加上对应的锁就行。</p>
-<p>测试实现:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make trie_test trie_store_test -j$(nproc)<br>make trie_noncopy_test trie_store_noncopy_test -j$(nproc)<br>./test/trie_store_test<br>./test/trie_store_noncopy_test<br></code></pre></td></tr></table></figure>
-<h2 id="Task3-调试"><a href="#Task3-调试" class="headerlink" title="Task3 调试"></a>Task3 调试</h2><p>需要在<code>trie_answer.h</code>中填入有关<code>trie_debug_test.cpp</code>中trie结构的信息，随机数生成不一样，可以将trie结构初始化改成：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">auto</span> trie = <span class="hljs-built_in">Trie</span>();<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;65&quot;</span>, <span class="hljs-number">25</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;61&quot;</span>, <span class="hljs-number">65</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;82&quot;</span>, <span class="hljs-number">84</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;2&quot;</span>, <span class="hljs-number">42</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;16&quot;</span>, <span class="hljs-number">67</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;94&quot;</span>, <span class="hljs-number">53</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;20&quot;</span>, <span class="hljs-number">35</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;3&quot;</span>, <span class="hljs-number">57</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;93&quot;</span>, <span class="hljs-number">30</span>);<br>trie = trie.<span class="hljs-built_in">Put</span>&lt;<span class="hljs-type">uint32_t</span>&gt;(<span class="hljs-string">&quot;75&quot;</span>, <span class="hljs-number">29</span>);<br></code></pre></td></tr></table></figure>
-<p>然后根据要求，输出看结果，填入答案即可。(感觉是很无趣的一环)</p>
-<h2 id="Task4-SQL-String-Functions"><a href="#Task4-SQL-String-Functions" class="headerlink" title="Task4 SQL String Functions"></a>Task4 SQL String Functions</h2><p>在<code>string_expression.h</code>中加入大小写转换的功能。在<code>plan_func_call.cpp</code>中实现对刚才写的功能的调用(跟着注释来写就好)</p>
-<p>测试实现:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make -j`nproc` shell<br>./bin/bustub-shell<br><span class="hljs-meta prompt_">bustub&gt; </span><span class="language-bash"><span class="hljs-keyword">select</span> upper(<span class="hljs-string">&#x27;AbCd&#x27;</span>), lower(<span class="hljs-string">&#x27;AbCd&#x27;</span>);</span><br></code></pre></td></tr></table></figure>
-<p>结果出现<code>ABCD abcd</code>即正确。</p>
-<h2 id="提交代码"><a href="#提交代码" class="headerlink" title="提交代码"></a>提交代码</h2><h3 id="Format"><a href="#Format" class="headerlink" title="Format"></a>Format</h3><p>公开课的特色之一：Style Check，<br>官方给出的三行命令检查：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">make format</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">make check-lint</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">make check-clang-tidy-p0</span><br></code></pre></td></tr></table></figure>
-<p>在此ag中，不满足上述三种规则的代码会直接评0分。<br>由于本人在terminal下只能执行第二条命令，第一条和第三条都报错，转而使用了vscode的自动格式化：<br>在Macos的环境下大致配置如下：</p>
+<h3 id="RecordAccess-frame-id-t-frame-id"><a href="#RecordAccess-frame-id-t-frame-id" class="headerlink" title="RecordAccess(frame_id_t frame_id) :"></a>RecordAccess(frame_id_t frame_id) :</h3><p>记录给定帧 ID 在当前时间戳被访问的情况。在代码中表现为更新指定<code>LRUKNode</code>的history。记得自己手动增加当前时间戳。</p>
+<h3 id="Remove-frame-id-t-frame-id"><a href="#Remove-frame-id-t-frame-id" class="headerlink" title="Remove(frame_id_t frame_id):"></a>Remove(frame_id_t frame_id):</h3><p>清除与一个帧相关的所有访问历史记录。将帧从帧map中删除，同时减小<code>LRUKReplacer</code> 的大小。</p>
+<h3 id="SetEvictable-frame-id-t-frame-id-bool-set-evictable"><a href="#SetEvictable-frame-id-t-frame-id-bool-set-evictable" class="headerlink" title="SetEvictable(frame_id_t frame_id, bool set_evictable) :"></a>SetEvictable(frame_id_t frame_id, bool set_evictable) :</h3><p>该方法控制帧是否可驱逐。并且控制 <code>LRUKReplacer</code> 的大小。(注意不能仅根据要设置的布尔值来判断，还要看该帧本来的情况。)</p>
+<h3 id="Size"><a href="#Size" class="headerlink" title="Size () :"></a>Size () :</h3><p>返回当前在 <code>LRUKReplace</code> 中的可驱逐帧的数量。</p>
+<h2 id="Task2-Disk-Scheduler"><a href="#Task2-Disk-Scheduler" class="headerlink" title="Task2 Disk Scheduler"></a>Task2 Disk Scheduler</h2><p>该组件负责调度 DiskManager 上的读写操作。在 <code>disk_scheduler.h</code> 中实现一个名为 DiskScheduler 的新类，并在 <code>disk_scheduler.cpp</code> 中实现相应的实现文件。<br>要实现的两个方法：</p>
+<h3 id="Schedule-DiskRequest-r"><a href="#Schedule-DiskRequest-r" class="headerlink" title="Schedule(DiskRequest r):"></a>Schedule(DiskRequest r):</h3><p>调度请求。即将请求r加入到队列中排队以等待DiskManager执行读写。</p>
+<h3 id="StartWorkerThread"><a href="#StartWorkerThread" class="headerlink" title="StartWorkerThread():"></a>StartWorkerThread():</h3><p>后台工作线程的启动方法，用于处理计划请求。工作线程在 DiskScheduler 构造函数中创建，并调用此方法。该方法负责获取队列中的请求并将其分派给 DiskManager进行pageread or page write。在调用 DiskScheduler 的析构函数之前，该方法不应返回。<br>其中队列可以直接用提供的<code>Channel</code>类，其包括Put和Get两个方法，Get自带了等待的环节，在获取请求时方便了很多。<br>这个Task的关键是读懂文档和注释，我们看启动代码，在DiskScheduler的析构函数中有:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// Put a `std::nullopt` in the queue to signal to exit the loop</span><br>request_queue_.<span class="hljs-built_in">Put</span>(std::<span class="hljs-literal">nullopt</span>);<br></code></pre></td></tr></table></figure>
+<p>自然地，在StartWorkerThread中我们就是一个while(true)，直到Get到的队列是析构函数发出的信号：nullopt。推出循环，对于其他正常的请求，我们分配给DiskManager进行对磁盘的读写操作，&#x3D;&#x3D;注意，这里读写完一定要对call_back设置true值以实现异步处理&#x3D;&#x3D;。<br>一个语法的点：传DiskRequest时，记得加上std::move</p>
+<h2 id="Task3-Buffer-Pool-Manager"><a href="#Task3-Buffer-Pool-Manager" class="headerlink" title="Task3 Buffer Pool Manager"></a>Task3 Buffer Pool Manager</h2><p>系统中的所有内存中页都由 Page 对象表示。Page 对象只是缓冲池中的内存容器，因此不是特定于唯一页面的。也就是说，每个 Page 对象都包含一块内存，<strong>相同</strong>的 Page 对象可能在整个系统生命周期中包含<strong>不同</strong>的物理页，<code>Page</code>只是内存的抽象。Page 对象的标识符(Page _ id)跟踪它包含的物理页面; 如果 Page 对象不包含物理页面，那么它的 Page _ id 必须设置为 <code>INVALID _ PAGE _ ID</code>。<br>每个 Page 对象还维护一个计数器，用于计算<code>pinned</code>该页面的线程数。不能释放被<code>pinned</code>的 Page。每个 Page 对象还跟踪它是否是<code>dirty</code>。 必须将<code>dirty Page</code>写回磁盘，然后才能重用该对象。<br>BufferPoolManager 实现将使用Task1中创建的 LRUKReplace 类跟踪 Page 对象何时被访问(将 page _ id 映射到 frame _ id)，以便在必须释放一个<code>frame</code>以腾出空间从磁盘复制一个新的物理页面时决定<code>evict</code>哪个对象。同时使用Task2中创建的调度器来实现对<code>dirty page</code>的写入，和<code>fetchpage</code>时对page的读取。&#x3D;&#x3D;因此，建议确保前两个类实现没问题的情况下再进行Task的作业，能免去很多无效的内耗检查(&#x3D;&#x3D;.<br>在<code>buffer pool manager.cpp</code>中实现：</p>
+<h3 id="NewPage-page-id-t-page-id"><a href="#NewPage-page-id-t-page-id" class="headerlink" title="NewPage(page_id_t* page_id) :"></a>NewPage(page_id_t* page_id) :</h3><p>新建页，几个步骤：</p>
 <ol>
-<li>在vscode拓展中安装<code>Clang-Format</code></li>
-<li>阅读readme,在.vscode文件夹下的<code>settings.json</code>中配置如下两行:<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;editor.formatOnSave&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><span class="hljs-punctuation">,</span> <span class="hljs-comment">// 保存时自动格式化</span><br><span class="hljs-attr">&quot;clang-format.executable&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/absolute/path/to/clang-format&quot;</span> <span class="hljs-comment">// 路径(等下要改)</span><br></code></pre></td></tr></table></figure></li>
-<li>若安装过brew,在terminal中安装format:<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">brew install clang-format<br></code></pre></td></tr></table></figure></li>
-<li>获取format路径，在terminal中输入<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">which clang-format<br></code></pre></td></tr></table></figure></li>
-<li>将输出结果复制覆盖上述json文件的路径。</li>
-<li>在vscode中打开要格式化的代码文件，cmd+s保存即可自动格式化。<br>此时应该满足官方的前两条规则，第三条是有关代码本身，包括变量命名的规范，循环条件的冗余等等。(若安装了<code>clangd</code>拓展，在ide中会如编译错误一样标红显示，注意进行修改)</li>
+<li>通过<code>AllocatePage()</code> 获得新的page_id</li>
+<li>再取frame帧跟踪page，先从freelist里取，若没有再到replacer_里去evict(至此，Page结构的两个重要数据<code>page_id 和 frame_id</code>都已得到)</li>
+<li>初始化Page，赋值相关的属性，并将其加入到<code>Page_table</code>中。</li>
+<li><code>pin</code>Page : <ol>
+<li>添加访问记录</li>
+<li>设置不可驱逐</li>
+<li>pin_cout ++</li>
 </ol>
-<p>当一切完成，打包文件，在命令行中输入:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd build<br>make submit-p0<br></code></pre></td></tr></table></figure>
-<p>会在根目录下自动生成<em>proj0-submission.zip</em>压缩包，上传ag(无法直接导入github库)，虔诚地等待打分……</p>
+</li>
+</ol>
+<h3 id="FetchPage-page-id-t-page-id"><a href="#FetchPage-page-id-t-page-id" class="headerlink" title="FetchPage(page_id_t page_id)"></a>FetchPage(page_id_t page_id)</h3><p>取页，分两种情况：</p>
+<ol>
+<li>page已在池里，则直接pin该page</li>
+<li>page不在池中：先取跟踪该page的帧(若freelist和replacer_中都已空，无法跟踪该帧，返回nullptr)，后生成新的page页，并使用调度器读取该page_id物理页上的内容。注意由于并发的存在，这里读磁盘时，一定要等待读取完成，(<code>future.get()</code>)。对page完善后，同样地，pin page.</li>
+</ol>
+<h3 id="UnpinPage-page-id-t-page-id-bool-is-dirty"><a href="#UnpinPage-page-id-t-page-id-bool-is-dirty" class="headerlink" title="UnpinPage(page_id_t page_id, bool is_dirty)"></a>UnpinPage(page_id_t page_id, bool is_dirty)</h3><p>取消对某页的引用，代码上表现为：找到page，将其<code>pin count</code>减1，若减完后<code>pin count</code>为0，则设置该page可驱逐。设置is_dirty标志指示前后是否改变(&#x3D;&#x3D;注意一个页会有许多引用，一个引用没修改该页不代表另外的页没修改，只要一个引用修改了该页，那么该页就是dirty page。因此这里不是简单地赋值，而是要用或运算&#x3D;&#x3D;)</p>
+<h3 id="FlushPage-page-id-t-page-id"><a href="#FlushPage-page-id-t-page-id" class="headerlink" title="FlushPage(page_id_t page_id)"></a>FlushPage(page_id_t page_id)</h3><p>无论该页状态如何，将其内容写入磁盘。同时设置<code>is_dirty</code> 为 false。同样地，像上述FetchPage提到，在磁盘操作的时候，一定要等待操作完成。</p>
+<h3 id="FlushAllPages"><a href="#FlushAllPages" class="headerlink" title="FlushAllPages()"></a>FlushAllPages()</h3><p>对记录的page调用FlushPage</p>
+<h3 id="DeletePage-page-id-t-page-id"><a href="#DeletePage-page-id-t-page-id" class="headerlink" title="DeletePage(page_id_t page_id)"></a>DeletePage(page_id_t page_id)</h3><p>删除页，若找不到该页，直接返回true。若该页被pin，无法删除，返回false。将page从page_table删除，同时取消对其的跟踪，将帧移出replacer并加入到freelist中，reset该页的元数据，最后调用DeallocatePage(它模拟在磁盘上释放页面)。</p>
+<h2 id="AG测试"><a href="#AG测试" class="headerlink" title="AG测试"></a>AG测试</h2><p>当你通过了本地测试，<code>make submit-p1</code>满怀自信地去上传ag时，一片红让你怀疑人生(本地测试用例实在太少了，建议读者自己多写几个测试实现，而不是像我一样把ag当debug机器)</p>
+<p>提两个踩的坑:</p>
+<ol>
+<li>遇到超时，大概率是死锁问题</li>
+<li>. 关于内存泄漏，对于replacer_中创造的LRUKNode节点，记得在析构函数destroy replacer的时候删除</li>
+<li>关于<em>BufferPoolManagerTest.HardTest_4</em>，把BufferPoolManager函数中的锁换成: <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::scoped_lock&lt;std::mutex&gt; <span class="hljs-title">locker</span><span class="hljs-params">(latch_)</span></span>;<br></code></pre></td></tr></table></figure>
+即可解决。</li>
+</ol>
+<p>祝大家都能满分通过 :）</p>
 
                 
               </div>
@@ -340,8 +345,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>CMU15-445 Proj0.C++ Primer</div>
-      <div>https://clansi.github.io/2023/11/18/Proj0.C++ Primer/</div>
+      <div>CMU15-445 Proj1.BUFFER POOL</div>
+      <div>https://clansi.github.io/2023/11/26/Proj1.Buffer pool/</div>
     </div>
     <div class="license-meta">
       
@@ -353,7 +358,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月18日</div>
+          <div>2023年11月26日</div>
         </div>
       
       
@@ -385,18 +390,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/11/26/Proj1.Buffer%20pool/" title="CMU15-445 Proj1.BUFFER POOL">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CMU15-445 Proj1.BUFFER POOL</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/11/08/hello-world/" title="Hello World">
-                        <span class="hidden-mobile">Hello World</span>
+                      <a href="/2023/11/18/Proj0.C++%20Primer/" title="CMU15-445 Proj0.C++ Primer">
+                        <span class="hidden-mobile">CMU15-445 Proj0.C++ Primer</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
