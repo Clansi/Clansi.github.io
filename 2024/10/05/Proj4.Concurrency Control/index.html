@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://clansi.github.io/images/43.png">
 <meta property="og:image" content="https://clansi.github.io/images/44.png">
 <meta property="article:published_time" content="2024-10-05T13:08:50.077Z">
-<meta property="article:modified_time" content="2024-10-05T13:53:05.031Z">
+<meta property="article:modified_time" content="2024-10-05T13:55:02.629Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://clansi.github.io/images/41.png">
@@ -291,8 +291,9 @@
 <h3 id="2-1-Tuple-Reconstruction"><a href="#2-1-Tuple-Reconstruction" class="headerlink" title="2.1 Tuple Reconstruction"></a>2.1 Tuple Reconstruction</h3><p>功能清晰明了，遍历<code>undo log</code>并根据其中的信息还原，像图片展示地一样：<br><img src="/../images/42.png" srcset="/img/loading.gif" lazyload></p>
 <p>需要注意的是<code>undo log</code>的结构：<br><img src="/../images/43.png" srcset="/img/loading.gif" lazyload><br><code>undo log</code>结构存的<code>Tuple</code>只含有修改的<code>column</code>，而<code>ReconstructTuple</code>函数参数中未给予这个<code>undolog.tuple.schema</code>，这意味着我们无法简单地索引这个<code>Tuple</code>的值，像官方文档中说的：</p>
 <blockquote>
-<p>you will likely need to construct the partial schema of the tuple based on the table schema and the modified fields.<br>因此我们需要自己写一个helpfunc:GetUndoLogSchema。就可以对<code>undolog.tuple.GetValue</code>获取值。(注意这里的col_idx和原始元组是不一样的)</p>
+<p>you will likely need to construct the partial schema of the tuple based on the table schema and the modified fields.</p>
 </blockquote>
+<p>因此我们需要自己写一个helpfunc:GetUndoLogSchema。就可以对<code>undolog.tuple.GetValue</code>获取值。(注意这里的col_idx和原始元组是不一样的)</p>
 <h3 id="2-2-Sequential-Scan-Tuple-Retrieval"><a href="#2-2-Sequential-Scan-Tuple-Retrieval" class="headerlink" title="2.2 Sequential Scan &#x2F; Tuple Retrieval"></a>2.2 Sequential Scan &#x2F; Tuple Retrieval</h3><p>重写seq执行器使事务读到它<strong>应该</strong>读到的数据，我们需要比较事务的<code>read_ts</code>和<code>tuple_ts</code>，如果需要重构元组，还要比较<code>undolog</code>中记录的<code>ts</code>。<br>这里引入<strong>临时时间戳</strong>：事务在更改元组时会先给元组上临时时间戳 &#x3D; <strong>当前事务id</strong> + <code>txn_start_id</code>(一个很大的值，为了与commit_ts区别开)。注意这里<strong>当前事务id</strong>指的是可阅读的，而并非代码中记录的<code>GetTransactionId()</code>,实际上当前事务的临时时间戳 &#x3D; <code>GetTransactionId()</code>。在事务提交时，才会给元组记录上commit_ts.<br>具体来说：</p>
 <ol>
 <li>当前事务<code>read_ts</code> &gt;<code>tuple_ts</code>或者<code>tuple_ts</code> &#x3D; <code>txn_id</code>(很大的不可阅读的值)，前者代表当前事务newer，后者代表是事务自修改(insert or delete or update). 这都意味着可以直接使用元组</li>
@@ -345,17 +346,15 @@
 <h4 id="Indexscan"><a href="#Indexscan" class="headerlink" title="Indexscan"></a>Indexscan</h4><p>重写<code>indexscan</code>使之支持<code>mvcc</code>,把之前<code>seq_scan</code>有关<strong>重组元组</strong>的内容copy过来即可。</p>
 <h4 id="Insert-Deletes-and-Updates"><a href="#Insert-Deletes-and-Updates" class="headerlink" title="Insert,Deletes and Updates"></a>Insert,Deletes and Updates</h4><h5 id="in-progress"><a href="#in-progress" class="headerlink" title="in_progress"></a>in_progress</h5><p>这里需要实现并发控制(cc),bustub为我们提供<code>versionlink</code>中字段<code>in_progress</code>来控制，当其被设置成true,意味着有线程在更新元组和版本链，其他线程不应该修改该元组。很像锁对吧，<br>很容易想到，我们想要线程安全的流程大概是这样：</p>
 <ol>
-<li><p>检查<code>in_progress</code>是否为false，如果是设置其为true.</p>
-</li>
-<li><p>更新元组，包括其versionlink 、table_heap and writeset.</p>
-</li>
-<li><p>设置<code>in_progress</code>为false.<br>但是注意这并不是一个原子量，这意味着访问这个量时也会存在各种各样的数据竞争，这就是这里的痛点。在第一步中，我们实现的步骤大概是，获取versionlink，设置标志位，更新<code>versionlink</code>。注意到<code>Updateversionlink</code>函数中有一个check函数，这也就是我们检查当前元组versionlink的in_progress是否可以被获取。要检查的内容大致有两项：</p>
-</li>
-<li><p>在获取versionlink到试图修改versionlink的过程中，versionlink的值是否被改变了.</p>
-</li>
-<li><p>in_progress是否为false.<br>我们可以写一个lambda check函数捕获在修改前get的versionlink.在<code>Updateversionlink</code>函数内部会根据rid再获取一次<code>versionlink</code>，比较的就是这两个版本。<br>当<code>Updateversionlink</code>返回true时，就代表我们设置<code>in_progress</code>为true成功，即拿到了当前元组的锁。之后就可放心地跑逻辑。<br>关于释放<code>in_progress</code>的时机，一个简单的实现是在事务<code>commit</code>时根据<code>writeset</code>，将修改元组的<code>versionlink</code>的<code>in_progress</code>全部释放，这样做的好处是，所有自修改的逻辑运行不需要拿取<code>in_progress</code>，因为上一个修改的事务已经控制<code>in_progress</code>且未释放。<br>因此，并发控制中，要加入执行器的逻辑是，在非自修改getversionlink后，去尝试获取<code>in_progress</code>,当然也不要忘了<strong>写写冲突</strong>。<br><strong>tips</strong>:在控制<code>in_progress</code>后需重新<code>gettuple</code>，因为之前根据pipline breaker生成的缓冲区元组可能已经是过时的。</p>
+<li>检查<code>in_progress</code>是否为false，如果是设置其为true.</li>
+<li>更新元组，包括其versionlink 、table_heap and writeset.</li>
+<li>设置<code>in_progress</code>为false.<br>但是注意这并不是一个原子量，这意味着访问这个量时也会存在各种各样的数据竞争，这就是这里的痛点。在第一步中，我们实现的步骤大概是，获取versionlink，设置标志位，更新<code>versionlink</code>。注意到<code>Updateversionlink</code>函数中有一个check函数，这也就是我们检查当前元组versionlink的in_progress是否可以被获取。要检查的内容大致有两项：<ol>
+<li>在获取versionlink到试图修改versionlink的过程中，versionlink的值是否被改变了.</li>
+<li>in_progress是否为false.</li>
+</ol>
 </li>
 </ol>
+<p>我们可以写一个lambda check函数捕获在修改前get的versionlink.在<code>Updateversionlink</code>函数内部会根据rid再获取一次<code>versionlink</code>，比较的就是这两个版本。<br>当<code>Updateversionlink</code>返回true时，就代表我们设置<code>in_progress</code>为true成功，即拿到了当前元组的锁。之后就可放心地跑逻辑。<br>关于释放<code>in_progress</code>的时机，一个简单的实现是在事务<code>commit</code>时根据<code>writeset</code>，将修改元组的<code>versionlink</code>的<code>in_progress</code>全部释放，这样做的好处是，所有自修改的逻辑运行不需要拿取<code>in_progress</code>，因为上一个修改的事务已经控制<code>in_progress</code>且未释放。<br>因此，并发控制中，要加入执行器的逻辑是，在非自修改getversionlink后，去尝试获取<code>in_progress</code>,当然也不要忘了<strong>写写冲突</strong>。<br><strong>tips</strong>:在控制<code>in_progress</code>后需重新<code>gettuple</code>，因为之前根据pipline breaker生成的缓冲区元组可能已经是过时的。</p>
 <h5 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h5><p>修改<code>insert</code>，主要是两个点：</p>
 <ol>
 <li>在task4.1中，insert的第一个检查即是检查元组是否存在索引中，此时我们不应该<code>abort</code>该事务，而是像<code>update</code>一样去修改这个被删除的元组，根据自修改和非自修改生成undolog维护该tuple的versionlink.这里就提到了我在前面讲的关于<code>undolog</code>中<code>delete</code>标志位的设置。在我的实现中，我仅会在这种情况下，也就是在索引条件下插入到由<code>delete</code>执行器删除的元组中，并且是非自修改的情况下，设置<code>undolog is_delete = true</code>.因为此时才需要从<code>undolog</code>中找寻<strong>被delete过</strong>的信息.</li>
