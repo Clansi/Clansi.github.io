@@ -16,19 +16,19 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="写了很久的一个proj，debug过程相当折磨，注意：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。 Task1- Read&#x2F;Write Page Guards实现 BasicPageGuard，它存储指向 BufferPoolManager 和 Page 对象的指针。page guard确保在相应的 Page 对象超出作用域时立即对其调用 UnpinPage。">
+    <meta name="description" content="写了很久的一个proj，debug过程相当折磨注意：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。 Task1- Read&#x2F;Write Page Guards实现 BasicPageGuard，它存储指向 BufferPoolManager 和 Page 对象的指针。page guard确保在相应的 Page 对象超出作用域时立即对其调用 UnpinPage。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445 Proj2.Extendible hash index">
 <meta property="og:url" content="https://clansi.github.io/2023/12/13/Proj2.Extendible%20hash%20index/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="写了很久的一个proj，debug过程相当折磨，注意：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。 Task1- Read&#x2F;Write Page Guards实现 BasicPageGuard，它存储指向 BufferPoolManager 和 Page 对象的指针。page guard确保在相应的 Page 对象超出作用域时立即对其调用 UnpinPage。">
+<meta property="og:description" content="写了很久的一个proj，debug过程相当折磨注意：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。 Task1- Read&#x2F;Write Page Guards实现 BasicPageGuard，它存储指向 BufferPoolManager 和 Page 对象的指针。page guard确保在相应的 Page 对象超出作用域时立即对其调用 UnpinPage。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://clansi.github.io/images/20.png">
 <meta property="og:image" content="https://clansi.github.io/images/21.png">
 <meta property="og:image" content="https://clansi.github.io/images/22.png">
 <meta property="og:image" content="https://clansi.github.io/images/23.png">
 <meta property="article:published_time" content="2023-12-13T13:46:00.000Z">
-<meta property="article:modified_time" content="2024-10-05T13:48:14.866Z">
+<meta property="article:modified_time" content="2024-10-05T14:07:13.180Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://clansi.github.io/images/20.png">
@@ -282,7 +282,7 @@
             
               <div class="markdown-body">
                 
-                <p>写了很久的一个proj，debug过程相当折磨，<br><strong>注意</strong>：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。</p>
+                <p>写了很久的一个proj，debug过程相当折磨<br><strong>注意</strong>：此proj需要在proj1的支撑下完成，务必确保proj1通过ag测试。</p>
 <h1 id="Task1-Read-Write-Page-Guards"><a href="#Task1-Read-Write-Page-Guards" class="headerlink" title="Task1- Read&#x2F;Write Page Guards"></a>Task1- Read&#x2F;Write Page Guards</h1><p>实现 <code>BasicPageGuard</code>，它存储指向 <code>BufferPoolManager</code> 和 <code>Page</code> 对象的指针。page guard确保在相应的 Page 对象超出作用域时立即对其调用 <code>UnpinPage</code>。</p>
 <p>需要对<code>BasicPageGuard</code>, <code>ReadPageGuard</code> 和<code>WritePageGuard</code>实现这四个函数：</p>
 <ul>

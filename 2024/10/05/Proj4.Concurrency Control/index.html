@@ -16,19 +16,19 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Overview23fall bustub最后proj concurrency control 不同于之前的lock manager,cxs为我们贡献了更为有趣的mvcc多版本控制并发.依赖于所有之前实现的bpm,index,query executor，并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持Snapshot Isolation级别的事务管理 Task1 timestamp">
+    <meta name="description" content="Overview23fall bustub最后proj concurrency control 不同于之前的lock manager,cxs为我们贡献了更为有趣的mvcc多版本控制并发.依赖于所有之前实现的bpm,index,query executor,并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持Snapshot Isolation级别的事务管理 Task1 timestamp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU15-445 Proj4.Concurrency Control">
 <meta property="og:url" content="https://clansi.github.io/2024/10/05/Proj4.Concurrency%20Control/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="Overview23fall bustub最后proj concurrency control 不同于之前的lock manager,cxs为我们贡献了更为有趣的mvcc多版本控制并发.依赖于所有之前实现的bpm,index,query executor，并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持Snapshot Isolation级别的事务管理 Task1 timestamp">
+<meta property="og:description" content="Overview23fall bustub最后proj concurrency control 不同于之前的lock manager,cxs为我们贡献了更为有趣的mvcc多版本控制并发.依赖于所有之前实现的bpm,index,query executor,并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持Snapshot Isolation级别的事务管理 Task1 timestamp">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://clansi.github.io/images/41.png">
 <meta property="og:image" content="https://clansi.github.io/images/42.png">
 <meta property="og:image" content="https://clansi.github.io/images/43.png">
 <meta property="og:image" content="https://clansi.github.io/images/44.png">
 <meta property="article:published_time" content="2024-10-05T13:08:50.077Z">
-<meta property="article:modified_time" content="2024-10-05T14:05:35.483Z">
+<meta property="article:modified_time" content="2024-10-05T14:08:15.146Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://clansi.github.io/images/41.png">
@@ -282,12 +282,12 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><p>23fall bustub最后proj concurrency control 不同于之前的lock manager,cxs为我们贡献了更为有趣的mvcc多版本控制并发.<br>依赖于所有之前实现的bpm,index,query executor，并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持<strong>Snapshot Isolation</strong>级别的事务管理</p>
+                <h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><p>23fall bustub最后proj <strong>concurrency control</strong> 不同于之前的lock manager,cxs为我们贡献了更为有趣的<strong>mvcc</strong>多版本控制并发.<br>依赖于所有之前实现的bpm,index,query executor,并且要对几个执行器进行重写以支持mvcc,最后我们可以得到支持<strong>Snapshot Isolation</strong>级别的事务管理</p>
 <h1 id="Task1-timestamps"><a href="#Task1-timestamps" class="headerlink" title="Task1 timestamps"></a>Task1 timestamps</h1><p>为了管理事务，我们给予事务两个<code>timestamp</code>:<code>read_ts</code> 和<code>commit_ts</code>，其中<code>read_ts</code>决定了该事务能读到的数据。<code>commit_ts</code>指定了该事务提交后所更改元组的<code>timestamp</code>。举个例子：<br><img src="/../images/41.png" srcset="/img/loading.gif" lazyload></p>
 <p>如果我们有一个<code>read_ts</code> &#x3D; 3的事务，它将在本例中看到 A3、 B3、 C2和 D3。如果读取时间戳 &#x3D; 2，它将看到 A2，B1，C2。当事务开始时，<strong>读取时间戳将是最新提交的事务的时间戳</strong>，这样事务就能够在事务开始之前看到所有提交的内容。当事务提交时，它会被分配一个比<code>last_commit_ts</code>大1的提交时间戳。在bustub中默认<code>last_commit_ts = 1</code>，因此第一个事务将会被分配<code>read_ts = 1</code>，当其提交时<code>commit_ts = 2</code></p>
 <h3 id="task1-1-Timestamp-Allocation"><a href="#task1-1-Timestamp-Allocation" class="headerlink" title="task1.1 Timestamp Allocation"></a>task1.1 Timestamp Allocation</h3><p>对于task1.1，只需完成<code>read_ts</code>和<code>commit_ts</code>的分配即可.</p>
 <h3 id="task1-2-Watermark"><a href="#task1-2-Watermark" class="headerlink" title="task1.2 Watermark"></a>task1.2 Watermark</h3><p><code>Watermark</code>是所有正在进行的事务中<strong>最低的读取时间戳</strong>。我们将维护两个函数:<code>Watermark::AddTxn</code> 和 <code>Watermark::RemoveTxn</code>，在加入事务、删除事务的时候更新<code>watermark</code><br>watermark中<code>commit_ts</code>记录了上一个<code>commit_ts</code>，也就是<code>txn_mng中的last_commit_ts</code>。<br>在bustub提供的代码中，对于current_reads_使用了<code>unorderd_map</code>来维护，修改成std::map可以方便地完成。</p>
-<h1 id="Task2-Storage-Format-and-Sequential-Scan"><a href="#Task2-Storage-Format-and-Sequential-Scan" class="headerlink" title="Task2 Storage Format and Sequential Scan"></a>Task2 Storage Format and Sequential Scan</h1><p>对于元组的多版本控制，我们使用delta表来实现，只记录修改的值，每个元组都有一个versionlink，并通过versionlink-&gt;undolink-&gt;undolog的形式存储。其值的变化(包括delete)都会反映在undolog中。</p>
+<h1 id="Task2-Storage-Format-and-Sequential-Scan"><a href="#Task2-Storage-Format-and-Sequential-Scan" class="headerlink" title="Task2 Storage Format and Sequential Scan"></a>Task2 Storage Format and Sequential Scan</h1><p>对于元组的多版本控制，我们使用<strong>delta表</strong>来实现，只记录修改的值，每个元组都有一个versionlink，并通过versionlink-&gt;undolink-&gt;undolog的形式存储。其值的变化(包括delete)都会反映在undolog中。</p>
 <h3 id="2-1-Tuple-Reconstruction"><a href="#2-1-Tuple-Reconstruction" class="headerlink" title="2.1 Tuple Reconstruction"></a>2.1 Tuple Reconstruction</h3><p>功能清晰明了，遍历<code>undo log</code>并根据其中的信息还原，像图片展示地一样：<br><img src="/../images/42.png" srcset="/img/loading.gif" lazyload></p>
 <p>需要注意的是<code>undo log</code>的结构：<br><img src="/../images/43.png" srcset="/img/loading.gif" lazyload><br><code>undo log</code>结构存的<code>Tuple</code>只含有修改的<code>column</code>，而<code>ReconstructTuple</code>函数参数中未给予这个<code>undolog.tuple.schema</code>，这意味着我们无法简单地索引这个<code>Tuple</code>的值，像官方文档中说的：</p>
 <blockquote>
@@ -319,7 +319,7 @@
 <li>自修改：<ol>
 <li>对于delete，直接修改<code>tuplemeta</code>标记<code>is_delete</code>标志位即可(这里有一个对于undolog里delete标志位的思考，它是简单的标志元组被删除吗？对于delete，我们只修改<code>is_delete</code>，而tuple的信息还保存着，真的需要再生成一个undolog吗？实际上通篇写完后，发现这个标志位怎么理解都可以，具体看自己的实现和维护，后面task4.1再讲讲)</li>
 <li>对于update，建议大家认真看文档中关于自修改的example，实际上这里也分两种情况:<ol>
-<li>对于此前自修改过的位，比如原来是(A,3)，第一次修改(A,4)，这次自修改(A,5)，这意味着这次修改不改变undolog，只是更新了table_heap，也意味着自修改过程中上次的修改作废，换句话说(A,4)这次更新不需要记录，就像他没存在过一样.</li>
+<li>对于此前自修改过的位，比如原来是(A,3)，第一次修改(A,4)，这次自修改(A,5)，这意味着这次修改<strong>不改变undolog</strong>，只是更新了table_heap，也意味着自修改过程中上次的修改作废，换句话说(A,4)这次更新不需要记录，<strong>就像他没存在过一样</strong>.</li>
 <li>对于此前没修改过的，比如从(A,3)到(A,5)到(B,5)，我们需要记录原本元组A的值，生成新的undolog。</li>
 </ol>
 </li>
@@ -363,7 +363,8 @@
 </ol>
 <h5 id="delete-and-update"><a href="#delete-and-update" class="headerlink" title="delete and update"></a>delete and update</h5><p>对于数据操作的逻辑不需要做什么修改，在非自修改时注意获取<code>in_progress</code>，并且注意获取最新的元组信息即可。</p>
 <h3 id="4-3-Primary-Key-Updates"><a href="#4-3-Primary-Key-Updates" class="headerlink" title="4.3 Primary Key Updates"></a>4.3 Primary Key Updates</h3><p>对于主键的update，因为可能占到别的元组位置导致唯一性冲突，解决方法是把之前的key元组全部删除再插入新的元组。即修改update执行器逻辑，当检测到要更新主键元素时，先调用delete执行器的修改逻辑，再调用insert执行器的修改逻辑即可。<br>要获取update更新的列，可以从<code>plan_-&gt;target_expressions_</code>入手.</p>
-<h1 id="End"><a href="#End" class="headerlink" title="End"></a>End</h1><p>写的时间跨度有点大了，只能讲讲宏观上的理解了,最后并发debug的过程也没有记录下,很多细节都没记录上,记录的习惯还是太差了:( btw感谢CMU,感谢Alan,感谢cxs让我们能有机会接触如此棒的课程!<br>最后附上通过截图：<br><img src="/../images/44.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="End"><a href="#End" class="headerlink" title="End"></a>End</h1><p>写的时间跨度有点大了,只能讲讲宏观上的理解了,最后并发debug的过程也没有记录下,很多细节都没记录上,记录的习惯还是太差了:( btw感谢CMU,感谢Alan,感谢cxs让我们能有机会接触如此棒的课程!</p>
+<p>最后附上通过截图：<br><img src="/../images/44.png" srcset="/img/loading.gif" lazyload></p>
 <p>参考文章：<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/679864449">CMU15-445 2023 Fall Project#4 - Concurrency Control</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/713107182">CMU15445 (Fall 2023) Project 4 - Concurrency Control 思路分享</a></p>
 
                 
