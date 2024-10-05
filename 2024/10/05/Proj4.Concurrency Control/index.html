@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://clansi.github.io/images/43.png">
 <meta property="og:image" content="https://clansi.github.io/images/44.png">
 <meta property="article:published_time" content="2024-10-05T13:08:50.077Z">
-<meta property="article:modified_time" content="2024-10-05T13:47:16.104Z">
+<meta property="article:modified_time" content="2024-10-05T13:53:05.031Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://clansi.github.io/images/41.png">
@@ -229,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.6k 字
+          6.7k 字
         
       </span>
     
@@ -240,7 +240,7 @@
         
         
         
-          56 分钟
+          57 分钟
         
       </span>
     
@@ -289,7 +289,10 @@
 <h3 id="task1-2-Watermark"><a href="#task1-2-Watermark" class="headerlink" title="task1.2 Watermark"></a>task1.2 Watermark</h3><p><code>Watermark</code>是所有正在进行的事务中<strong>最低的读取时间戳</strong>。我们将维护两个函数:<code>Watermark::AddTxn</code> 和 <code>Watermark::RemoveTxn</code>，在加入事务、删除事务的时候更新<code>watermark</code><br>watermark中<code>commit_ts</code>记录了上一个<code>commit_ts</code>，也就是<code>txn_mng中的last_commit_ts</code>。<br>在bustub提供的代码中，对于current_reads_使用了<code>unorderd_map</code>来维护，修改成std::map可以方便地完成。</p>
 <h1 id="Task2-Storage-Format-and-Sequential-Scan"><a href="#Task2-Storage-Format-and-Sequential-Scan" class="headerlink" title="Task2 Storage Format and Sequential Scan"></a>Task2 Storage Format and Sequential Scan</h1><p>对于元组的多版本控制，我们使用delta表来实现，只记录修改的值，每个元组都有一个versionlink，并通过versionlink-&gt;undolink-&gt;undolog的形式存储。其值的变化(包括delete)都会反映在undolog中。</p>
 <h3 id="2-1-Tuple-Reconstruction"><a href="#2-1-Tuple-Reconstruction" class="headerlink" title="2.1 Tuple Reconstruction"></a>2.1 Tuple Reconstruction</h3><p>功能清晰明了，遍历<code>undo log</code>并根据其中的信息还原，像图片展示地一样：<br><img src="/../images/42.png" srcset="/img/loading.gif" lazyload></p>
-<p>需要注意的是<code>undo log</code>的结构：<br><img src="/../images/43.png" srcset="/img/loading.gif" lazyload><br><code>undo log</code>结构存的<code>Tuple</code>只含有修改的<code>column</code>，而<code>ReconstructTuple</code>函数参数中未给予这个<code>undolog.tuple.schema</code>，这意味着我们无法简单地索引这个<code>Tuple</code>的值，像官方文档中说的：<br>    you will likely need to construct the partial schema of the tuple based on the table schema and the modified fields.<br>因此我们需要自己写一个helpfunc:GetUndoLogSchema。就可以对<code>undolog.tuple.GetValue</code>获取值。(注意这里的col_idx和原始元组是不一样的)</p>
+<p>需要注意的是<code>undo log</code>的结构：<br><img src="/../images/43.png" srcset="/img/loading.gif" lazyload><br><code>undo log</code>结构存的<code>Tuple</code>只含有修改的<code>column</code>，而<code>ReconstructTuple</code>函数参数中未给予这个<code>undolog.tuple.schema</code>，这意味着我们无法简单地索引这个<code>Tuple</code>的值，像官方文档中说的：</p>
+<blockquote>
+<p>you will likely need to construct the partial schema of the tuple based on the table schema and the modified fields.<br>因此我们需要自己写一个helpfunc:GetUndoLogSchema。就可以对<code>undolog.tuple.GetValue</code>获取值。(注意这里的col_idx和原始元组是不一样的)</p>
+</blockquote>
 <h3 id="2-2-Sequential-Scan-Tuple-Retrieval"><a href="#2-2-Sequential-Scan-Tuple-Retrieval" class="headerlink" title="2.2 Sequential Scan &#x2F; Tuple Retrieval"></a>2.2 Sequential Scan &#x2F; Tuple Retrieval</h3><p>重写seq执行器使事务读到它<strong>应该</strong>读到的数据，我们需要比较事务的<code>read_ts</code>和<code>tuple_ts</code>，如果需要重构元组，还要比较<code>undolog</code>中记录的<code>ts</code>。<br>这里引入<strong>临时时间戳</strong>：事务在更改元组时会先给元组上临时时间戳 &#x3D; <strong>当前事务id</strong> + <code>txn_start_id</code>(一个很大的值，为了与commit_ts区别开)。注意这里<strong>当前事务id</strong>指的是可阅读的，而并非代码中记录的<code>GetTransactionId()</code>,实际上当前事务的临时时间戳 &#x3D; <code>GetTransactionId()</code>。在事务提交时，才会给元组记录上commit_ts.<br>具体来说：</p>
 <ol>
 <li>当前事务<code>read_ts</code> &gt;<code>tuple_ts</code>或者<code>tuple_ts</code> &#x3D; <code>txn_id</code>(很大的不可阅读的值)，前者代表当前事务newer，后者代表是事务自修改(insert or delete or update). 这都意味着可以直接使用元组</li>
@@ -324,11 +327,11 @@
 <li>非自修改：<ol>
 <li>对于删除，生成包含原始元组完整数据的<code>undolog</code>。</li>
 <li>对于更新，需要对比生成undolog。<br>生成undolog后将其链入元组的versionlink中，对于自修改，我们不需要再链一个新的undolog，只需调用：<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs livescript">exec_ctx_-&gt;GetTransaction<span class="hljs-function"><span class="hljs-params">()</span>-&gt;</span>ModifyUndoLog<br></code></pre></td></tr></table></figure>
-对于非自修改，则需要插入新的undolog，调用：<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs haxe">auto <span class="hljs-keyword">new</span><span class="hljs-type">_link</span> = exec_ctx_-&gt;GetTransaction()&gt;AppendUndoLog(<span class="hljs-keyword">new</span><span class="hljs-type">_undolog</span>);<br>txn_manager-&gt;UpdateUndoLink<br></code></pre></td></tr></table></figure>
-最后不要忘了update tableheap and writeset。<br>这块应该会有比较长的debug时间，包括边缘情况的处理和逻辑的实现缺陷，大家一定要写好<code>TxnMgrDbg</code>这个debug函数来节约自己的时间和提高效率。</li>
+对于非自修改，则需要插入新的undolog，调用：<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs haxe">auto <span class="hljs-keyword">new</span><span class="hljs-type">_link</span> = exec_ctx_-&gt;GetTransaction()&gt;AppendUndoLog(<span class="hljs-keyword">new</span><span class="hljs-type">_undolog</span>);<br>txn_manager-&gt;UpdateUndoLink<br></code></pre></td></tr></table></figure></li>
 </ol>
 </li>
 </ol>
+<p>最后不要忘了update tableheap and writeset。<br>这块应该会有比较长的debug时间，包括边缘情况的处理和逻辑的实现缺陷，大家一定要写好<code>TxnMgrDbg</code>这个debug函数来节约自己的时间和提高效率。</p>
 <h3 id="3-4-Stop-the-world-Garbage-Collection"><a href="#3-4-Stop-the-world-Garbage-Collection" class="headerlink" title="3.4 Stop-the-world Garbage Collection"></a>3.4 Stop-the-world Garbage Collection</h3><p>删除那些我们永远不会读到的数据，而<code>garbage</code>靠什么来界定呢？记得我们在task1写的<code>watermark</code>,它是最小的read_ts，试想，如果一个undolog的ts小于<code>watermark</code>，我们可能就永远不会读到它(特殊情况是，table_heap上的tuple我们无法读取，必须从其undolog来重构元组，这种情况下，即使undolog的ts小，我们仍然需要保留。具体可见example图，十分清晰)</p>
 <p>实现来说，我们需要遍历table heap和tuple的undolog,记录下需要保留的txn_id,注意,我们只能collect那些<code>abort</code>或者<code>commited</code> status的txn。</p>
 <p>此时，您应该通过<em>TxnExecutorTest</em>。</p>
@@ -342,11 +345,16 @@
 <h4 id="Indexscan"><a href="#Indexscan" class="headerlink" title="Indexscan"></a>Indexscan</h4><p>重写<code>indexscan</code>使之支持<code>mvcc</code>,把之前<code>seq_scan</code>有关<strong>重组元组</strong>的内容copy过来即可。</p>
 <h4 id="Insert-Deletes-and-Updates"><a href="#Insert-Deletes-and-Updates" class="headerlink" title="Insert,Deletes and Updates"></a>Insert,Deletes and Updates</h4><h5 id="in-progress"><a href="#in-progress" class="headerlink" title="in_progress"></a>in_progress</h5><p>这里需要实现并发控制(cc),bustub为我们提供<code>versionlink</code>中字段<code>in_progress</code>来控制，当其被设置成true,意味着有线程在更新元组和版本链，其他线程不应该修改该元组。很像锁对吧，<br>很容易想到，我们想要线程安全的流程大概是这样：</p>
 <ol>
-<li>检查<code>in_progress</code>是否为false，如果是设置其为true.</li>
-<li>更新元组，包括其versionlink 、table_heap and writeset.</li>
-<li>设置<code>in_progress</code>为false.<br>但是注意这并不是一个原子量，这意味着访问这个量时也会存在各种各样的数据竞争，这就是这里的痛点。在第一步中，我们实现的步骤大概是，获取versionlink，设置标志位，更新<code>versionlink</code>。注意到<code>Updateversionlink</code>函数中有一个check函数，这也就是我们检查当前元组versionlink的in_progress是否可以被获取。要检查的内容大致有两项：</li>
-<li>在获取versionlink到试图修改versionlink的过程中，versionlink的值是否被改变了.</li>
-<li>in_progress是否为false.<br>我们可以写一个lambda check函数捕获在修改前get的versionlink.在<code>Updateversionlink</code>函数内部会根据rid再获取一次<code>versionlink</code>，比较的就是这两个版本。<br>当<code>Updateversionlink</code>返回true时，就代表我们设置<code>in_progress</code>为true成功，即拿到了当前元组的锁。之后就可放心地跑逻辑。<br>关于释放<code>in_progress</code>的时机，一个简单的实现是在事务<code>commit</code>时根据<code>writeset</code>，将修改元组的<code>versionlink</code>的<code>in_progress</code>全部释放，这样做的好处是，所有自修改的逻辑运行不需要拿取<code>in_progress</code>，因为上一个修改的事务已经控制<code>in_progress</code>且未释放。<br>因此，并发控制中，要加入执行器的逻辑是，在非自修改getversionlink后，去尝试获取<code>in_progress</code>,当然也不要忘了<strong>写写冲突</strong>。<br><strong>tips</strong>:在控制<code>in_progress</code>后需重新<code>gettuple</code>，因为之前根据pipline breaker生成的缓冲区元组可能已经是过时的。</li>
+<li><p>检查<code>in_progress</code>是否为false，如果是设置其为true.</p>
+</li>
+<li><p>更新元组，包括其versionlink 、table_heap and writeset.</p>
+</li>
+<li><p>设置<code>in_progress</code>为false.<br>但是注意这并不是一个原子量，这意味着访问这个量时也会存在各种各样的数据竞争，这就是这里的痛点。在第一步中，我们实现的步骤大概是，获取versionlink，设置标志位，更新<code>versionlink</code>。注意到<code>Updateversionlink</code>函数中有一个check函数，这也就是我们检查当前元组versionlink的in_progress是否可以被获取。要检查的内容大致有两项：</p>
+</li>
+<li><p>在获取versionlink到试图修改versionlink的过程中，versionlink的值是否被改变了.</p>
+</li>
+<li><p>in_progress是否为false.<br>我们可以写一个lambda check函数捕获在修改前get的versionlink.在<code>Updateversionlink</code>函数内部会根据rid再获取一次<code>versionlink</code>，比较的就是这两个版本。<br>当<code>Updateversionlink</code>返回true时，就代表我们设置<code>in_progress</code>为true成功，即拿到了当前元组的锁。之后就可放心地跑逻辑。<br>关于释放<code>in_progress</code>的时机，一个简单的实现是在事务<code>commit</code>时根据<code>writeset</code>，将修改元组的<code>versionlink</code>的<code>in_progress</code>全部释放，这样做的好处是，所有自修改的逻辑运行不需要拿取<code>in_progress</code>，因为上一个修改的事务已经控制<code>in_progress</code>且未释放。<br>因此，并发控制中，要加入执行器的逻辑是，在非自修改getversionlink后，去尝试获取<code>in_progress</code>,当然也不要忘了<strong>写写冲突</strong>。<br><strong>tips</strong>:在控制<code>in_progress</code>后需重新<code>gettuple</code>，因为之前根据pipline breaker生成的缓冲区元组可能已经是过时的。</p>
+</li>
 </ol>
 <h5 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h5><p>修改<code>insert</code>，主要是两个点：</p>
 <ol>
@@ -357,6 +365,7 @@
 <h5 id="delete-and-update"><a href="#delete-and-update" class="headerlink" title="delete and update"></a>delete and update</h5><p>对于数据操作的逻辑不需要做什么修改，在非自修改时注意获取<code>in_progress</code>，并且注意获取最新的元组信息即可。</p>
 <h3 id="4-3-Primary-Key-Updates"><a href="#4-3-Primary-Key-Updates" class="headerlink" title="4.3 Primary Key Updates"></a>4.3 Primary Key Updates</h3><p>对于主键的update，因为可能占到别的元组位置导致唯一性冲突，解决方法是把之前的key元组全部删除再插入新的元组。即修改update执行器逻辑，当检测到要更新主键元素时，先调用delete执行器的修改逻辑，再调用insert执行器的修改逻辑即可。<br>要获取update更新的列，可以从<code>plan_-&gt;target_expressions_</code>入手.</p>
 <p>最后附上通过截图：<br><img src="/../images/44.png" srcset="/img/loading.gif" lazyload></p>
+<p>参考文章：<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/679864449">CMU15-445 2023 Fall Project#4 - Concurrency Control</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/713107182">CMU15445 (Fall 2023) Project 4 - Concurrency Control 思路分享</a></p>
 
                 
               </div>
