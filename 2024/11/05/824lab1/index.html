@@ -16,17 +16,17 @@
   <meta name="author" content="Clansy">
   <meta name="keywords" content="">
   
-    <meta name="description" content="在阅读完Mapreduce paper 和lec1的内容后，开始6.5840lab1.Mapreduce实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。 Overview阅读启动代码mrcoordinator.go和mrworker.go，结合paper介绍：系统工作的逻辑是：对于协调者(c">
+    <meta name="description" content="在阅读完Mapreduce paper 和lec1、lec2的内容后，可以开始6.5840lab1.Mapreduce实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。 Overview阅读启动代码mrcoordinator.go和mrworker.go，结合paper介绍：系统工作的逻辑是：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mit6.5840 Lab1.MapReduce">
 <meta property="og:url" content="https://clansi.github.io/2024/11/05/824lab1/index.html">
 <meta property="og:site_name" content="Clansy&#39;s Blog">
-<meta property="og:description" content="在阅读完Mapreduce paper 和lec1的内容后，开始6.5840lab1.Mapreduce实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。 Overview阅读启动代码mrcoordinator.go和mrworker.go，结合paper介绍：系统工作的逻辑是：对于协调者(c">
+<meta property="og:description" content="在阅读完Mapreduce paper 和lec1、lec2的内容后，可以开始6.5840lab1.Mapreduce实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。 Overview阅读启动代码mrcoordinator.go和mrworker.go，结合paper介绍：系统工作的逻辑是：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://clansi.github.io/images/824lab1-1.png">
 <meta property="og:image" content="https://clansi.github.io/images/824lab1-2.png">
 <meta property="article:published_time" content="2024-11-05T06:08:33.718Z">
-<meta property="article:modified_time" content="2024-11-12T08:47:12.409Z">
+<meta property="article:modified_time" content="2024-11-13T08:56:29.232Z">
 <meta property="article:author" content="Clansy">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://clansi.github.io/images/824lab1-1.png">
@@ -280,7 +280,7 @@
             
               <div class="markdown-body">
                 
-                <p>在阅读完Mapreduce paper 和lec1的内容后，开始6.5840lab1.Mapreduce<br>实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。<br><img src="/../images/824lab1-1.png" srcset="/img/loading.gif" lazyload></p>
+                <p>在阅读完Mapreduce paper 和lec1、lec2的内容后，可以开始6.5840lab1.Mapreduce<br>实验内容是实现Mapreduce系统，就像paper里提到的一样，我们使用master(在实验中称为coordinator)和worker来调度和实施任务。<br><img src="/../images/824lab1-1.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>阅读启动代码<code>mrcoordinator.go</code>和<code>mrworker.go</code>，结合paper介绍：<br>系统工作的逻辑是：<br>对于<strong>协调者(coordinator)</strong>:<br>    接收所有的任务文件作为输入，而后启动监听线程server，接受worker通过rpc传输的请求任务信息。<br>对于<strong>worker</strong>:<br>    接受<code>map</code>和<code>reduce</code>函数，调用worker方法不断向<strong>coordinator</strong>请求任务。<br>如此，我们不需要实现<code>map</code>和<code>reduce</code>函数，要完成的是<strong>coordinator</strong>和<strong>worker</strong>间的协调和请求</p>
 <p>在lab文档中，hints和rules提到了很多规则和实现细节，但有些杂乱，如上所述，我分类<strong>worker</strong>和<strong>coordinator</strong>，根据工作的流程，挑选了几条重要的来看：</p>
 <h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><h3 id="worker："><a href="#worker：" class="headerlink" title="worker："></a>worker：</h3><ol>
@@ -288,7 +288,7 @@
 </ol>
 <ul>
 <li>Go <code>RPC</code> 只发送名称以大写字母开头的结构体字段，因此确保传递的结构体字段名称以大写字母开头。 </li>
-<li>调用 RPC <code>call()</code> 函数时，<code>reply</code> 结构应包含所有默认值，确保传递的 <code>reply</code> 没有非默认字段，避免 RPC 系统静默返回不正确的值。<br>)<br>对于<strong>coordinator</strong>，在收到请求后，送回<strong>worker</strong> reply关于任务类型、任务文件等内容，如此<strong>worker</strong>根据reply执行<code>map</code> or <code>reduce</code>，结构像这样：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 请求任务</span><br>args := TaskRequstArgs&#123;&#125;  <br>reply := TaskRequstReply&#123;&#125;<br>ok := call(<span class="hljs-string">&quot;Coordinator.RequstTask&quot;</span>, &amp;args, &amp;reply)<br><span class="hljs-keyword">if</span> !ok &#123;<br>	fmt.Printf(<span class="hljs-string">&quot;call failed!\n&quot;</span>)<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>&#125;<br><br><span class="hljs-comment">// 根据返回的任务类型执行相应的操作</span><br><span class="hljs-keyword">switch</span> reply.TaskType &#123;<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;map&quot;</span>: domaptask(..)<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;reduce&quot;</span>: doreducetask(..)<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;done&quot;</span>: <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure></li>
+<li>调用 RPC <code>call()</code> 函数时，<code>reply</code> 结构应包含所有默认值，确保传递的 <code>reply</code> 没有非默认字段，避免 RPC 系统静默返回不正确的值。<br>)<br>对于<strong>coordinator</strong>，在收到请求后，送回<strong>worker</strong> reply关于任务类型、任务文件等内容，如此<strong>worker</strong>根据reply执行<code>map</code> or <code>reduce</code>，结构像这样：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 请求任务</span><br>args := TaskRequstArgs&#123;&#125;  <br>reply := TaskRequstReply&#123;&#125;<br>ok := call(<span class="hljs-string">&quot;Coordinator.RequstTask&quot;</span>, &amp;args, &amp;reply)<br><span class="hljs-keyword">if</span> !ok &#123;<br>	fmt.Printf(<span class="hljs-string">&quot;call failed!\n&quot;</span>)<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>&#125;<br><br><span class="hljs-comment">// 根据返回的任务类型执行相应的操作</span><br><span class="hljs-keyword">switch</span> reply.TaskType &#123;<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;map&quot;</span>: domaptask(..)<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;reduce&quot;</span>: doreducetask(..)<br>	<span class="hljs-keyword">case</span> <span class="hljs-string">&quot;done&quot;</span>: <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>&#125;<br></code></pre></td></tr></table></figure></li>
 </ul>
 <ol start="2">
 <li><strong>中间结果处理</strong>：<br>这里模仿<code>mrsequential.go</code>中关于<code>map</code>任务和<code>reduce</code>任务的执行，关键在于文件的创建和写入，注意以下几点：</li>
@@ -311,7 +311,7 @@
 <blockquote>
 <p>The coordinator can’t reliably distinguish between crashed workers, workers that are alive but have stalled for some reason, and workers that are executing but too slowly to be useful. The best you can do is have the coordinator wait for some amount of time, and then give up and re-issue the task to a different worker. For this lab, have the coordinator wait for ten seconds; after that the coordinator should assume the worker has died (of course, it might not have).</p>
 </blockquote>
-<p>简单来说， 如果<strong>Worker</strong> 未能在合理时间内(这里建议是<em>10s</em>)完成任务，<strong>Coordinator</strong> 应重试。例如，让 <strong>Coordinator</strong> 等待 <em>十秒钟</em>，之后假设 <strong>Worker</strong> 已经失效并重新分配任务。实现方法也很简单，<strong>coordinator</strong>在分配任务时要自己维护一个关于任务执行时间的数据结构，在<strong>coordinator</strong><em>启动</em>时同时启动一个关于时间检查的<strong>go协程</strong>，对于那些超时的任务，将他们视为未分配而后让在<em>wait</em>(或者空闲)的<strong>worker</strong>重新执行任务。</p>
+<p>简单来说， 如果<strong>Worker</strong> 未能在合理时间内(这里建议是<em>10s</em>)完成任务，<strong>Coordinator</strong> 应重试。例如，让 <strong>Coordinator</strong> 等待 <em>十秒钟</em>，之后假设 <strong>Worker</strong> 已经失效并重新分配任务。实现方法也很简单，就像lec2中所说的，<strong>coordinator</strong>在分配任务时要自己维护一个关于任务执行时间的数据结构，在<strong>coordinator</strong><em>启动</em>时同时启动一个关于时间检查的<strong>go协程</strong>，对于那些超时的任务，将他们视为未分配而后让在<em>wait</em>(或者空闲)的<strong>worker</strong>重新执行任务。</p>
 <p>如果使用了<code>cond</code>来控制对于<strong>worker</strong>的等待，那么这里还有一个细节是，cond<strong>不应该只在</strong>超时检测到有任务<strong>超时</strong>时<code>broadcast</code>，在<code>map</code>任务结束后或者<code>reduce</code>任务结束后也要<code>broadcast</code>：<br>试想三个<strong>worker</strong>进程并行请求任务，<code>map</code>只剩下两个任务分配，分给了<em>worker1</em>、<em>worker2</em>执行，<em>worker3</em>因为执行不了<code>reduce</code>任务而进行<code>cond.wait</code>等待。此时如果没有任务超时，那它永远不会被唤醒。之后对于<code>reduce</code>任务的执行实际上只有两个<strong>worker</strong>线程在运行，这浪费了资源。因此在本例中，<em>worker1</em>、<em>worker2</em>在执行完成<code>map</code>任务后，<strong>coordinator</strong>应该调用<code>cond.boradcast</code>唤醒<em>worker3</em>.</p>
 <p>整个lab还是很开放的，都可以自由发挥。最后，不要忘了多个 <strong>Worker</strong> 可能同时请求任务，记得使用锁保护共享状态。<br>实现完成后，运行bash test-mr.sh:<br><img src="/../images/824lab1-2.png" srcset="/img/loading.gif" lazyload></p>
 
